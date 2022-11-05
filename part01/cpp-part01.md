@@ -34,10 +34,12 @@ c语言的系统库的实现。
 ***functions are first class objects(函数式一等公民)***
 ***higher order functions(高阶函数)***
 
+
 $$
 \lambda = f(x, y, z,...) \\
-\lambda, f, x, y, z, ... \in functions\tag{0.1}
+\lambda, f, x, y, z, ... \in functions \tag{0.1}
 $$
+
 
 在面向过程的语言(c语言)中，函数必须转换为变量对象(函数指针)才能被作为参数或返回值。
 
