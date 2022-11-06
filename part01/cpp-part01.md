@@ -1,8 +1,8 @@
-# cpp基础
+# __cpp基础__
 
-## 编程语言
+## __编程语言__
 
-### 过程式(Procedure Oriented Programming)
+### __过程式(Procedure Oriented Programming)__
 
 <ul>
     <li>c</li>
@@ -21,7 +21,7 @@ __主要是面向函数的编程。__
 
 c语言的系统库的实现。
 
-### 函数式(Functional programming)
+### __函数式(Functional programming)__
 
 <ul>
   <li>lisp</li>
@@ -53,7 +53,47 @@ $$
 更注重接口的实现的功能而非如何实现接口。
 STL库中通过定义iterator的行为，确保不同containner(容器)模块同algorithm(算法)模块的交互。
 
-### 对象式(Object Oriented Programming)
+#### __Example(differential)__
+
+$$
+a, b, c, d = f(x, y, z, w) \\
+a, b, c, d, x, y, z, w \in scalar \\
+f \in function
+$$
+
+$$
+differential := diff \\
+diff \in function \\
+J = diff(f, x, y, z, w) \\
+J \in matrix(Jacobian)
+$$
+
+$$
+differential := diff \\
+diff \in function \\
+J = diff(f) \\
+J \in function
+$$
+
+$$
+partial {-} differential \\
+J(x) \\
+J(x, y) \\
+J(x, y, z)
+$$
+
+$$
+partial {-} differential \\
+J(x, y, z, w)
+$$
+
+$$
+  differential, integral, grad, div, rot... \\
+  Laplace, Fourier...\\
+  Cybernetic, Singal...
+$$
+
+### __对象式(Object Oriented Programming)__
 
 <ul>
   <li>c++(class)</li>
@@ -80,44 +120,163 @@ __每一种思想都有局限，任何大型的软件工程系统都难以用一
 
 注：graphical programming language(labview, scratch)
 
-## c++与c
+## __c++与c__
 
 ```c++
 
-// StoreTensor.h
+// store_tensor.h
 
-#ifndef __STORE_TENSOR_UTILS_H__
-#define __STORE_TENSOR_UTILS_H__
+#ifndef __MEM_OBJECT_H__
+#define __MEM_OBJECT_H__
 
-#include <vector>
-#include <string>
 #include <cstddef>
 
-class StoreTensor {
+class MemObject {
 public:
-    StoreTensor(std::vector<int> dims, int ele_size);
-    ~StoreTensor();
-    size_t Size() { return size_; };
-    size_t MemSize() { return mem_size_; };
-    int DataType() { return data_type_; }
+    MemObject(size_t size);
+    ~MemObject();
 
-    static Dump(StoreTensor &store_tensor, std::string file_name);
+    void* GetMemPtr();
+    size_t GetMemSize();
+
+    static void Dump(MemObject &mem_object, char[] file_name);
 
 private:
-    std::vector<char> mem_;
-    std::vector<int> dims_;
+
+    void* data_ptr_;
     size_t size_;
-    size_t mem_size_;
-    int ele_size_;
 };
 
 #undef
 
 ```
 
+```c
+
+// store_tensor.h
+
+#ifndef __MEM_OBJECT_H__
+#define __MEM_OBJECT_H__
+
+#include <stddef.h>
+
+typedef struct {
+  void* data_ptr_;
+  size_t size_;
+} MemObject;
+
+void MemObjectConstructor(MemObject *this, size_t size);
+void MemObjectDestructor(MemObject *this);
+void* MemObjectGetMemPtr(MemObject *this);
+size_t MemObjectGetMemSize(MemObject *this);
+void MemObjectDump(MemObject *mem_object, char[] file_name);
+
+#undef
+```
+
+```c++
+
+#include "store_tensor.h"
+
+#include <cstdio>
+
+int main() {
+
+  MemObject mem_object(1024);
+
+  printf("addr:%p size:%lu\n", 
+         mem_object.GetMemPtr(), 
+         mem_object.GetMemSize());
+
+  MemObject::Dump(mem_object, "./mem.txt");
+
+  return 0;
+}
+
+```
+
+```c
+
+#include "store_tensor.h"
+
+#include <stdio.h>
+
+int main() {
+
+  MemObject mem_object;
+  MemObjectConstructor(&mem_object, 1024);
+
+  printf("addr:%p size:%lu\n",
+         MemObjectGetMemPtr(&mem_object),
+         MemObjectGetMemSize(&mem_object));
+
+  MemObjectDump(&mem_object, "./mem.txt");
+
+  MemObjectDestructor(&mem_object);
+  return 0;
+}
+```
+
+c++符号修饰([c++ mangling](http://web.mit.edu/tibbetts/Public/inside-c/www/mangling.html#))
+
+## __c++的构造函数__
 
 
+### __默认构造函数__
 
+	编译器自动生成该构造函数，在某些情况下会被编译器优化掉，不生成机器码。	
 
+### __自定义构造函数__
+
+#### __成员初始化列表(member initializer lists)__
+
+```c++
+
+#include <fstream>
+
+struct Class {
+    unsigned char x;
+    unsigned char y;
+    std::fstream f;
+ 
+    Class(int x) : Base{123}, // initialize base class
+        y{0},     // y initialized to 0
+        f{"test.cc", std::ios::app}, // this takes place after x and y are initialized
+        x(x),     // x (member) is initialized with x (parameter)
+    {} 
+};
+
+```
+
+<ol>
+<li>If the constructor is for the most-derived class, virtual bases are initialized in the order in which they appear in depth-first left-to-right traversal of the base class declarations (left-to-right refers to the appearance in base-specifier lists) </li>
+<li>Then, direct bases are initialized in left-to-right order as they appear in this class's base-specifier list </li>
+<li>Then, non-static data member are initialized in order of declaration in the class definition.</li>
+<li>Finally, the body of the constructor is executed</li>
+</ol>
+
+#### __explicit关键字__
+
+防止隐式变换导致的非预想的结果。
+
+### __拷贝构造函数__
+
+A copy constructor of class T is a non-template constructor whose first parameter is T&, const T&, volatile T&, or const volatile T&, and either there are no other parameters, or the rest of the parameters all have default values.
+
+#### __调用规则__
+
+The copy constructor is called whenever an object is initialized (by direct-initialization or copy-initialization) from another object of the same type (unless overload resolution selects a better match or the call is elided), which includes
+
+<ol>
+<li>initialization: T a = b; or T a(b);, where b is of type T;</li>
+<li>function argument passing: f(a);, where a is of type T and f is void f(T t);</li>
+<li>function return: return a; inside a function such as T f(), where a is of type T, which has no move constructor.</li>
+</ol>
+
+#### __default关键字__
+
+强制编译器自动生成拷贝构造函数
+
+#### __delete构造函数__
 
 
