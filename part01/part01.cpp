@@ -1,5 +1,6 @@
 
 #include <vector>
+#include <memory>
 #include <iostream>
 #include <stdexcept>
 
@@ -76,6 +77,26 @@ public:
 		std::cout << "MemObject const copy constructor is called!" << std::endl;
 	}
 
+	// move constructor
+	MemObject(const MemObject &&mem_object) {
+
+		// release old mem object
+		free(data_ptr_);
+		data_ptr_ = nullptr;
+		size_ = 0;
+
+		// alloc new mem object
+		data_ptr_ = malloc(mem_object.size_);
+		if (nullptr == data_ptr_) {
+			throw std::runtime_error("MemObject init failed!");
+		}
+		
+		size_ = mem_object.size_;
+		memcpy(data_ptr_, mem_object.data_ptr_, size_);
+
+		std::cout << "MemObject move copy constructor is called!" << std::endl;
+	}
+
 	void* GetMemPtr() const { return data_ptr_; }
 	size_t GetMemSize() const { return size_; }
 	void LogInfo() const {
@@ -119,7 +140,7 @@ int main() {
 	{
 		MemObject mem_object_0(5);
 		MemObject mem_object_1 = mem_object_0;
-		mem_object_0.LogInfo();
+		mem_object_1.LogInfo();
 	}
 
 	std::cout << "****************************************" << std::endl;	
@@ -127,9 +148,112 @@ int main() {
 	{
 		const MemObject mem_object_0(5);
 		MemObject mem_object_1 = mem_object_0;
+		mem_object_1.LogInfo();
+	}
+
+	std::cout << "****************************************" << std::endl;	
+
+	// move constructor
+
+	{
+		MemObject mem_object_0 = MemObject(5);
 		mem_object_0.LogInfo();
 	}
 
 	std::cout << "****************************************" << std::endl;	
+
+	{
+		MemObject &&mem_object_0 = MemObject(5);
+		mem_object_0.LogInfo();
+	}
+
+	std::cout << "****************************************" << std::endl;	
+
+	// shared_ptr
+	
+	{
+		std::shared_ptr<MemObject> ptr_0 = nullptr;
+		{
+			std::shared_ptr<MemObject> ptr_1 = std::make_shared<MemObject>(1024);
+			ptr_0 = ptr_1;
+		}
+
+		std::cout << "ptr_1 is out of scope!" << std::endl;	
+
+		ptr_0->LogInfo();
+	}
+
+	std::cout << "****************************************" << std::endl;	
+
+	// weak_ptr
+	{
+		std::weak_ptr<MemObject> ptr_0;
+		{
+			std::shared_ptr<MemObject> ptr_1 = std::make_shared<MemObject>(1024);
+			ptr_0 = ptr_1;
+		}
+		std::cout << "ptr_1 is out of scope!" << std::endl;	
+		
+		if (ptr_0.expired()) {
+			std::cout << "ptr_0 is expired!" << std::endl;
+		}
+
+		std::shared_ptr<MemObject> ptr_2 = ptr_0.lock();
+		if (nullptr == ptr_2) {
+			std::cout << "ptr_0 object is deleted!" << std::endl;
+		}
+	}
+
+	std::cout << "****************************************" << std::endl;	
+
+	{
+		std::weak_ptr<MemObject> ptr_0;
+		std::shared_ptr<MemObject> ptr_1;
+
+		{
+			std::shared_ptr<MemObject> ptr_2 = std::make_shared<MemObject>(1024);
+			ptr_0 = ptr_2;
+			ptr_1 = ptr_2;
+		}
+		std::cout << "ptr_2 is out of scope!" << std::endl;	
+		
+		if (ptr_0.expired()) {
+			std::cout << "ptr_0 is expired!" << std::endl;
+		}
+		else {
+			std::cout << "ptr_0 is not expired!" << std::endl;
+		}
+
+		std::shared_ptr<MemObject> ptr_3 = ptr_0.lock();
+		if (nullptr == ptr_3) {
+			std::cout << "ptr_0 object is deleted!" << std::endl;
+		}
+		else {
+			std::cout << "ptr_0 object is not deleted!" << std::endl;
+			ptr_3->LogInfo();
+		}
+	}
+
+	std::cout << "****************************************" << std::endl;	
+
+	// unique_ptr
+
+	{
+		std::unique_ptr<MemObject> ptr_0 = nullptr;
+		{
+			std::unique_ptr<MemObject> ptr_1 = std::make_unique<MemObject>(1024);
+			// ptr_0 = ptr_1;
+			ptr_0 = std::move(ptr_1);
+			if (nullptr == ptr_1) {
+				std::cout << "no object managed by ptr_1" << std::endl;
+			}
+		}
+
+		ptr_0->LogInfo();
+	}
+
+	std::cout << "****************************************" << std::endl;	
+
 	return 0;
 }
+
