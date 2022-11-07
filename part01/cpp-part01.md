@@ -36,8 +36,10 @@ c语言的系统库的实现。
 
 
 $$
-\lambda = f(x, y, z,...) \\
-\lambda, f, x, y, z, ... \in functions
+\begin{split}
+&\lambda = f(x, y, z,...) \\
+&\lambda, f, x, y, z, ... \in functions
+\end{split}
 $$
 
 
@@ -56,41 +58,53 @@ STL库中通过定义iterator的行为，确保不同containner(容器)模块同
 #### __Example(differential)__
 
 $$
-a, b, c, d = f(x, y, z, w) \\
-a, b, c, d, x, y, z, w \in scalar \\
-f \in function
+\begin{split}
+&a, b, c, d = f(x, y, z, w) \\
+&a, b, c, d, x, y, z, w \in scalar \\
+&f \in function
+\end{split}
 $$
 
 $$
-differential := diff \\
-diff \in function \\
-J = diff(f, x, y, z, w) \\
-J \in matrix(Jacobian)
+\begin{split}
+&differential := diff \\
+&diff \in function \\
+&J = diff(f, x, y, z, w) \\
+&J \in matrix(Jacobian)
+\end{split}
 $$
 
 $$
-differential := diff \\
-diff \in function \\
-J = diff(f) \\
-J \in function
+\begin{split}
+&differential := diff \\
+&diff \in function \\
+&J = diff(f) \\
+&J \in function
+\end{split}
 $$
 
 $$
-partial {-} differential \\
-J(x) \\
-J(x, y) \\
-J(x, y, z)
+\begin{split}
+&partial {-} differential \\
+&J(x) \\
+&J(x, y) \\
+&J(x, y, z)
+\end{split}
 $$
 
 $$
-partial {-} differential \\
-J(x, y, z, w)
+\begin{split}
+&partial {-} differential \\
+&J(x, y, z, w)
+\end{split}
 $$
 
 $$
-  differential, integral, grad, div, rot... \\
-  Laplace, Fourier... \\
-  Cybernetic, Singal...
+\begin{split}
+&differential, integral, grad, div, rot... \\
+&Laplace, Fourier... \\
+&Cybernetic, Singal...
+\end{split}
 $$
 
 ### __对象式(Object Oriented Programming)__
