@@ -28,7 +28,7 @@ public:
                 size_ = size;
 
                 std::cout << "MemObject constructor is called! addr:0x" 
-                  << std::hex << data_ptr_ << " size:" << size_  << std::endl;
+                  << std::hex << data_ptr_ << std::dec << " size:" << size_  << std::endl;
         }
 
         // destructor
@@ -57,7 +57,8 @@ public:
                 size_ = mem_object.size_;
                 memcpy(data_ptr_, mem_object.data_ptr_, size_);
 
-                std::cout << "MemObject copy constructor is called!" << std::endl;
+                std::cout << "MemObject copy constructor is called! addr:0x" 
+                  << std::hex << data_ptr_ << std::dec << " size:" << size_  << std::endl;
         }
 
         MemObject(const MemObject &mem_object) {
@@ -76,7 +77,8 @@ public:
                 size_ = mem_object.size_;
                 memcpy(data_ptr_, mem_object.data_ptr_, size_);
 
-                std::cout << "MemObject const copy constructor is called!" << std::endl;
+                std::cout << "MemObject const copy constructor is called! addr:0x" 
+                  << std::hex << data_ptr_ << std::dec << " size:" << size_  << std::endl;
         }
 
         // move constructor
@@ -96,14 +98,15 @@ public:
                 size_ = mem_object.size_;
                 memcpy(data_ptr_, mem_object.data_ptr_, size_);
 
-                std::cout << "MemObject move copy constructor is called!" << std::endl;
+                std::cout << "MemObject move constructor is called! addr:0x" 
+                  << std::hex << data_ptr_ << std::dec << " size:" << size_  << std::endl;
         }
 
         void* GetMemPtr() const { return data_ptr_; }
         size_t GetMemSize() const { return size_; }
         void LogInfo() const {
                 std::cout << "addr:0x" << std::hex << data_ptr_
-                  << " size:" << size_ << std::endl;
+                          << std::dec << " size:" << size_ << std::endl;
         }
 
 private:
@@ -164,8 +167,7 @@ int main() {
 
         {
                 
-                int size = static_cast<int>(time(NULL)) % 1024;
-                MemObject mem_object_0 = MemObject(size);
+                MemObject mem_object_0 = MemObject(1024);
                 mem_object_0.LogInfo();
         }
 
@@ -257,19 +259,19 @@ int main() {
         std::cout << "unique_ptr" << std::endl;
         // unique_ptr
 
-        {
-                std::unique_ptr<MemObject> ptr_0 = nullptr;
-                {
-                        std::unique_ptr<MemObject> ptr_1 = std::make_unique<MemObject>(1024);
-                        // ptr_0 = ptr_1;
-                        ptr_0 = std::move(ptr_1);
-                        if (nullptr == ptr_1) {
-                                std::cout << "no object managed by ptr_1" << std::endl;
-                        }
-                }
+        // {
+        //         std::unique_ptr<MemObject> ptr_0 = nullptr;
+        //         {
+        //                 std::unique_ptr<MemObject> ptr_1 = std::make_unique<MemObject>(1024);
+        //                 // ptr_0 = ptr_1;
+        //                 ptr_0 = std::move(ptr_1);
+        //                 if (nullptr == ptr_1) {
+        //                         std::cout << "no object managed by ptr_1" << std::endl;
+        //                 }
+        //         }
 
-                ptr_0->LogInfo();
-        }
+        //         ptr_0->LogInfo();
+        // }
 
         std::cout << "****************************************" << std::endl;   
 
